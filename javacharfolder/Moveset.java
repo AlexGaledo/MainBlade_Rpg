@@ -1,10 +1,10 @@
 package javacharfolder;
-public class Moveset {
+public class moveset {
     private String name;
     private int rawdamage;
     private String skillasset;
 
-    public Moveset(String name, int rawdamage, String skillasset){
+    public moveset(String name, int rawdamage, String skillasset){
         this.name = name;
         this.rawdamage = rawdamage;
         this.skillasset = skillasset;

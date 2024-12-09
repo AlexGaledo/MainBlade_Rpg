@@ -2,23 +2,26 @@ package javacharfolder;
 
 import java.util.Random;
 
-public class Character {
+public class character {
     private String name;
     private int level;
     private int health;
     private String characterclass;
     private double multiplier; // Changed to double
-    private Moveset skill;
-    private Moveset Ultimate;
+    private moveset skill;
+    private moveset Ultimate;
+    private boolean unlocked;
+    
 
-    public Character(String name, int level, int health, String characterclass, Moveset skill, Moveset Ultimate) {
+    public character(String name, int level, int health, String characterclass, moveset skill, moveset Ultimate, boolean unlocked) {
         this.name = name;
         this.level = level;
         this.health = health;
         this.characterclass = characterclass;
-        this.multiplier = getmultiplier(characterclass); // multiplier calculated here
+        this.multiplier = getmultiplier(characterclass);
         this.skill = skill;
         this.Ultimate = Ultimate;
+        this.unlocked = unlocked;
     }
 
     public String getname() {
@@ -53,11 +56,11 @@ public class Character {
         };
     }
 
-    public Moveset getskill() {
+    public  moveset getskill() {
         return skill;
     }
 
-    public Moveset getUlt() {
+    public moveset getUlt() {
         return Ultimate;
     }
 
