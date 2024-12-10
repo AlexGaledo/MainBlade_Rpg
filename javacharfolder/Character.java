@@ -11,9 +11,10 @@ public class character {
     private moveset skill;
     private moveset Ultimate;
     private boolean unlocked;
+    private String sprite;
     
 
-    public character(String name, int level, int health, String characterclass, moveset skill, moveset Ultimate, boolean unlocked) {
+    public character(String name, int level, int health, String characterclass, moveset skill, moveset Ultimate, boolean unlocked , String sprite) {
         this.name = name;
         this.level = level;
         this.health = health;
@@ -22,6 +23,7 @@ public class character {
         this.skill = skill;
         this.Ultimate = Ultimate;
         this.unlocked = unlocked;
+        this.sprite = sprite;
     }
 
     public String getname() {
@@ -62,6 +64,10 @@ public class character {
 
     public moveset getUlt() {
         return Ultimate;
+    }
+
+    public String getsprite(){
+        return sprite;
     }
 
     public void levelup() {
