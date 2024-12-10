@@ -22,7 +22,6 @@ public class MainBlade {
 
     public static boolean setcurrentuser(String username, String password){
         if(accexist(username)){
-
             if(!verifyaccount(username,password)){
                     System.out.println("Invalid password");
                     JOptionPane.showMessageDialog(null, "wrong password", "wrong password",JOptionPane.WARNING_MESSAGE);
@@ -267,30 +266,67 @@ public class MainBlade {
     public static void menu() {
         JFrame menuframe = new JFrame();
         menuframe.setLayout(new BorderLayout());
-        menuframe.setSize(1280,720);
+        menuframe.setSize(1280, 720);
         menuframe.getContentPane().setBackground(Color.BLACK);
         menuframe.setTitle("MainBlade_Menu");
         menuframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         menuframe.setIconImage(logo.getImage());
-        menuframe.setVisible(true);
         debugtools();
-
+    
+        // Panel for buttons
         JPanel userPanel = new JPanel();
-        userPanel.setPreferredSize(new Dimension(600,200));
-
-        JButton albertbutton = new JButton();
-        albertbutton.setText("Albert|Warrior");
-        albertbutton.setForeground(Color.GRAY);
-        userPanel.add(albertbutton);
-
-        JLabel albert = new JLabel();
-        albert.setIcon(loginicon);
-        albert.setText("Albert");
-        userPanel.add(albert);
-
-        menuframe.add(userPanel,BorderLayout.WEST);
-
+        userPanel.setPreferredSize(new Dimension(300, 720));
+        userPanel.setBackground(Color.DARK_GRAY);
+    
+        // Label for displaying the hero image
+        JLabel heroDisplay = new JLabel();
+        heroDisplay.setHorizontalAlignment(JLabel.CENTER);
+        heroDisplay.setVerticalAlignment(JLabel.CENTER);
+    
+        // Load owned characters
+        boolean[] ownedchars = current_user.getownedinfo();
+        characterpool heroes = new characterpool();
+    
+        for (int i = 0; i < ownedchars.length; i++) {
+            final int index = i;
+            if (ownedchars[i]) {
+                JButton ownedbutton = new JButton(heroes.characterpool[i].getname());
+                ownedbutton.setForeground(Color.GRAY);
+    
+                // Update image on click
+                ownedbutton.addActionListener(e -> {
+                    System.out.println("Selected: " + heroes.characterpool[index].getname());
+                    String heroname = heroes.characterpool[index].getname();
+                    // Load sprite correctly
+                    String spritePath = heroes.characterpool[index].getsprite();
+                    File spriteFile = new File(spritePath);
+    
+                    if (spriteFile.exists()) {
+                        ImageIcon herosprite = new ImageIcon(spritePath);
+                        
+                        heroDisplay.setIcon(herosprite); 
+                        heroDisplay.setText(heroname);
+                        heroDisplay.setFont(new Font("OLD English Text MT", Font.BOLD, 20));
+                    } else {
+                        System.out.println("Image not found: " + spritePath);
+                        JOptionPane.showMessageDialog(menuframe, 
+                            "Image not found: " + spritePath, 
+                            "Error", 
+                            JOptionPane.ERROR_MESSAGE);
+                    }
+                    menuframe.revalidate();
+                    menuframe.repaint(); 
+                });
+    
+                userPanel.add(ownedbutton);
+            }
+        }
+    
+        menuframe.add(userPanel, BorderLayout.WEST);
+        menuframe.add(heroDisplay, BorderLayout.CENTER);
+        menuframe.setVisible(true); 
     }
+    
 
 
     // public static void battle(Character player, Character Enemy){
