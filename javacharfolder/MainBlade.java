@@ -1,5 +1,6 @@
 package javacharfolder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
@@ -9,6 +10,7 @@ import javax.swing.border.*;
 public class MainBlade {
     public static HashMap<String,user> registered_users = new HashMap<String,user>();
     public static user current_user = null;
+    public static character bench[] = new character[5];
 
     public static ImageIcon logo = new ImageIcon("javacharfolder/assets/Mainblade.png");
     public static ImageIcon bg = new ImageIcon("javacharfolder/assets/MainBladePage.png");
@@ -131,6 +133,13 @@ public class MainBlade {
     public static void login(){
         JFrame loginframe = new JFrame();
         loginframe.setLayout(new FlowLayout(FlowLayout.LEFT));
+        JButton adminbutton = new JButton();
+        adminbutton.setText("admin login");
+        adminbutton.addActionListener(e3 ->{
+            setcurrentuser("admin", "mainblade");
+            loginframe.dispose();
+        });
+        loginframe.add(adminbutton);
     
     //Albert Image
         JLabel userprompt = new JLabel();
@@ -273,17 +282,20 @@ public class MainBlade {
         menuframe.setIconImage(logo.getImage());
         debugtools();
     
-        // Panel for buttons
         JPanel userPanel = new JPanel();
         userPanel.setPreferredSize(new Dimension(300, 720));
         userPanel.setBackground(Color.DARK_GRAY);
     
-        // Label for displaying the hero image
+        
         JLabel heroDisplay = new JLabel();
         heroDisplay.setHorizontalAlignment(JLabel.CENTER);
         heroDisplay.setVerticalAlignment(JLabel.CENTER);
+
+        JPanel movepanel = new JPanel();
+        movepanel.setPreferredSize(new Dimension(400,400));
+        movepanel.setBackground(Color.black);
     
-        // Load owned characters
+       
         boolean[] ownedchars = current_user.getownedinfo();
         characterpool heroes = new characterpool();
     
@@ -293,13 +305,40 @@ public class MainBlade {
                 JButton ownedbutton = new JButton(heroes.characterpool[i].getname());
                 ownedbutton.setForeground(Color.GRAY);
     
-                // Update image on click
+                
                 ownedbutton.addActionListener(e -> {
                     System.out.println("Selected: " + heroes.characterpool[index].getname());
                     String heroname = heroes.characterpool[index].getname();
-                    // Load sprite correctly
+                   
                     String spritePath = heroes.characterpool[index].getsprite();
                     File spriteFile = new File(spritePath);
+                    
+
+                    //button spawn  
+                    JButton skillbutton = new JButton();
+                    skillbutton.addActionListener(e1 ->{
+                        System.out.println("skill button spawned");
+                        String skill = heroes.characterpool[index].getskill().getmovename();skillbutton.setText(skill);
+                        skillbutton.setText(heroes.characterpool[index].getskill().getmovename());
+                        skillbutton.setPreferredSize(new Dimension(200,200));
+                        userPanel.add(skillbutton);
+                    });
+
+
+                    JButton ultbutton = new JButton();
+                    ultbutton.addActionListener(e2 ->{
+                        System.out.println("ult button spawned");
+                        String ult = heroes.characterpool[index].getUlt().getmovename();ultbutton.setText(ult);   
+                        ultbutton.setText(heroes.characterpool[index].getUlt().getmovename());
+                        ultbutton.setPreferredSize(new Dimension(200,200));
+                        userPanel.add(ultbutton);
+                    });
+                    
+
+                    movepanel.add(skillbutton);
+                    movepanel.add(ultbutton);
+                    
+               
     
                     if (spriteFile.exists()) {
                         ImageIcon herosprite = new ImageIcon(spritePath);
@@ -324,10 +363,9 @@ public class MainBlade {
     
         menuframe.add(userPanel, BorderLayout.WEST);
         menuframe.add(heroDisplay, BorderLayout.CENTER);
+        menuframe.add(movepanel,BorderLayout.SOUTH);
         menuframe.setVisible(true); 
-    }
-    
-
+    } 
 
     // public static void battle(Character player, Character Enemy){
 

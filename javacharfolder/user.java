@@ -1,8 +1,8 @@
 package javacharfolder;
 
 public class user {
-    private String username;
-    private String password;
+    private final String username;
+    private final String password;
     private boolean[] owned_characters = new boolean[10];
 
     public user(String name, String password, boolean[] owned_characters){

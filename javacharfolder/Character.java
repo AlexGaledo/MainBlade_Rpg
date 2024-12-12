@@ -3,15 +3,15 @@ package javacharfolder;
 import java.util.Random;
 
 public class character {
-    private String name;
+    private final String name;
     private int level;
     private int health;
-    private String characterclass;
+    private final String characterclass;
     private double multiplier; // Changed to double
-    private moveset skill;
-    private moveset Ultimate;
+    private final moveset skill;
+    private final moveset Ultimate;
     private boolean unlocked;
-    private String sprite;
+    private final String sprite;
     
 
     public character(String name, int level, int health, String characterclass, moveset skill, moveset Ultimate, boolean unlocked , String sprite) {
