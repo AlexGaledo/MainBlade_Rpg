@@ -1,6 +1,5 @@
 package javacharfolder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
@@ -11,6 +10,7 @@ public class MainBlade {
     public static HashMap<String,user> registered_users = new HashMap<String,user>();
     public static user current_user = null;
     public static character bench[] = new character[5];
+    public static  characterpool heroes = new characterpool();
 
     public static ImageIcon logo = new ImageIcon("javacharfolder/assets/Mainblade.png");
     public static ImageIcon bg = new ImageIcon("javacharfolder/assets/MainBladePage.png");
@@ -106,11 +106,11 @@ public class MainBlade {
     public static void create_newaccount(String username, String password){
         boolean[] tempowned = new boolean[10];
         Arrays.fill(tempowned,false);
-        tempowned[0] = true;
-        user newuser = new user(username,password,tempowned);
+        tempowned[0] = true;String initialLevels = "00000000000000000000";
+        user newuser = new user(username,password,tempowned,initialLevels);
         registered_users.put(username,newuser);
         current_user = newuser;
-        System.out.println("Successfully created account welcome to MainBlade! " + current_user.getusername());
+        System.out.println("Successfully created account welcome to MainBlade!" + current_user.getusername());
         
     }
 
@@ -215,6 +215,12 @@ public class MainBlade {
                 }
                 writer.write("\n");
             }
+            String leveltext ="";
+            for(int elements:current_user.getLevelsAsIntegers()){
+                String elementSTR = Integer.toString(elements);
+                leveltext += elementSTR;
+            }
+            writer.write(leveltext +"\n");
             
             writer.close();
         } catch (IOException e) {
@@ -238,7 +244,9 @@ public class MainBlade {
                     for(int i = 0 ; i < identifier.length() ; i++) {
                         ownedchars[i] = identifier.charAt(i) == '1';
                     }
-                    user tempuser = new user(username,password,ownedchars);
+                    String level = filereader.readLine();
+                    System.out.println("debug tool: " + level);
+                    user tempuser = new user(username, password, ownedchars,level);
                     add_users(username, tempuser);
                 }
                 filereader.close();
@@ -263,15 +271,41 @@ public class MainBlade {
                 System.out.print(owned ? '1' : '0');
             }
             System.out.println("\n---");
-        }
 
+        }
+        System.out.println(current_user.getlevels());
         System.out.println(current_user.getusername());
         System.out.println(current_user.getpassword());
+        System.out.println("hero name: "+ heroes.characterpool[0].getname());
+        System.out.println("hero multiplier: "+ heroes.characterpool[0].getmultiplier());
+        System.out.println("hero health: "+ heroes.characterpool[0].gethealth());
+        System.out.println("---------------------------------------------------------");
+        System.out.println("hero name: "+ heroes.characterpool[1].getname());
+        System.out.println("hero multiplier: "+ heroes.characterpool[1].getmultiplier());
+        System.out.println("hero health: "+ heroes.characterpool[1].gethealth());
+        System.out.println("---------------------------------------------------------");
+        System.out.println("hero name: "+ heroes.characterpool[2].getname());
+        System.out.println("hero multiplier: "+ heroes.characterpool[2].getmultiplier());
+        System.out.println("hero health: "+ heroes.characterpool[2].gethealth());
+        System.out.println("---------------------------------------------------------");
+
+    
+        
         for(boolean owned:current_user.getownedinfo()){
             System.out.println(owned + "\n");
         }
     }
 
+    public static void setlevels(){
+        int[] levelarray = current_user.getLevelsAsIntegers();
+            for(int i = 0; i < levelarray.length; i++){
+                for(int j = 0; j < levelarray[i] ; j++){
+                    heroes.characterpool[i].levelup();
+                    System.out.println(heroes.characterpool[i].getname() + " LEVEL IS  : " + heroes.characterpool[i].getlevel());
+                }
+            }
+    }
+    // pat paayos ng itsura neto whahaha
     public static void menu() {
         JFrame menuframe = new JFrame();
         menuframe.setLayout(new BorderLayout());
@@ -290,14 +324,10 @@ public class MainBlade {
         JLabel heroDisplay = new JLabel();
         heroDisplay.setHorizontalAlignment(JLabel.CENTER);
         heroDisplay.setVerticalAlignment(JLabel.CENTER);
-
-        JPanel movepanel = new JPanel();
-        movepanel.setPreferredSize(new Dimension(400,400));
-        movepanel.setBackground(Color.black);
     
        
         boolean[] ownedchars = current_user.getownedinfo();
-        characterpool heroes = new characterpool();
+       
     
         for (int i = 0; i < ownedchars.length; i++) {
             final int index = i;
@@ -307,45 +337,26 @@ public class MainBlade {
     
                 
                 ownedbutton.addActionListener(e -> {
+
                     System.out.println("Selected: " + heroes.characterpool[index].getname());
                     String heroname = heroes.characterpool[index].getname();
+                    moveset heroskill = heroes.characterpool[index].getskill();
+                    moveset heroult = heroes.characterpool[index].getUlt();
+                    
                    
                     String spritePath = heroes.characterpool[index].getsprite();
                     File spriteFile = new File(spritePath);
                     
-
-                    //button spawn  
-                    JButton skillbutton = new JButton();
-                    skillbutton.addActionListener(e1 ->{
-                        System.out.println("skill button spawned");
-                        String skill = heroes.characterpool[index].getskill().getmovename();skillbutton.setText(skill);
-                        skillbutton.setText(heroes.characterpool[index].getskill().getmovename());
-                        skillbutton.setPreferredSize(new Dimension(200,200));
-                        userPanel.add(skillbutton);
-                    });
-
-
-                    JButton ultbutton = new JButton();
-                    ultbutton.addActionListener(e2 ->{
-                        System.out.println("ult button spawned");
-                        String ult = heroes.characterpool[index].getUlt().getmovename();ultbutton.setText(ult);   
-                        ultbutton.setText(heroes.characterpool[index].getUlt().getmovename());
-                        ultbutton.setPreferredSize(new Dimension(200,200));
-                        userPanel.add(ultbutton);
-                    });
                     
 
-                    movepanel.add(skillbutton);
-                    movepanel.add(ultbutton);
-                    
-               
-    
                     if (spriteFile.exists()) {
                         ImageIcon herosprite = new ImageIcon(spritePath);
                         
                         heroDisplay.setIcon(herosprite); 
-                        heroDisplay.setText(heroname);
+                        heroDisplay.setText(heroname + " |Skill: " + heroskill.getmovename() + " |Ult: " + heroult.getmovename());
                         heroDisplay.setFont(new Font("OLD English Text MT", Font.BOLD, 20));
+                        heroDisplay.setForeground(Color.red);
+                        System.out.println(heroes.characterpool[index].getname() + " : " + heroes.characterpool[index].getlevel());
                     } else {
                         System.out.println("Image not found: " + spritePath);
                         JOptionPane.showMessageDialog(menuframe, 
@@ -356,18 +367,51 @@ public class MainBlade {
                     menuframe.revalidate();
                     menuframe.repaint(); 
                 });
-    
                 userPanel.add(ownedbutton);
             }
+            
+            
         }
-    
+        setlevels();
+        debugtools();
         menuframe.add(userPanel, BorderLayout.WEST);
         menuframe.add(heroDisplay, BorderLayout.CENTER);
-        menuframe.add(movepanel,BorderLayout.SOUTH);
+       
         menuframe.setVisible(true); 
-    } 
+    }
+
+    //Gacha
+    
+
+    //Battle logic:  
+    //Duplicate copies of characters 
+    //Turn points mechanics before a button would be active
 
     // public static void battle(Character player, Character Enemy){
+        // moveset heroskill = heroes.characterpool[index].getskill();
+        // moveset heroult = heroes.characterpool[index].getUlt();
 
+        // JDialog movebox = new JDialog();
+        // movebox.setLayout(new FlowLayout());
+        // movebox.setSize(500,200);
+        // movebox.setTitle("Choose Move and target");
+        // //Gagamitin sa Fight logic
+        // JButton skillButton = new JButton();
+        // skillButton.setText(heroskill.getmovename());
+        // skillButton.setPreferredSize(new Dimension(100,100));
+        // skillButton.addActionListener(sb->{
+        //     System.out.println(heroskill.getmovename() + " was used");
+        // });
+        // movebox.add(skillButton);
+
+        // JButton ultButton = new JButton();
+        // ultButton.setText(heroult.getmovename());
+        // ultButton.setPreferredSize(new Dimension(100,100));
+        // ultButton.addActionListener(ub->{
+        //     System.out.println(heroult.getmovename() + " was used");
+        // });
+        // movebox.add(ultButton);
+
+        // movebox.setVisible(true);
     // }
 }

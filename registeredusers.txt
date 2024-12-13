@@ -1,9 +1,4 @@
 admin
 mainblade
 1110000000
-Admin
-rineee
-1000000000
-Splinter
-rineee
-1110000000
+10101000000000000000

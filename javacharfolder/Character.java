@@ -19,7 +19,7 @@ public class character {
         this.level = level;
         this.health = health;
         this.characterclass = characterclass;
-        this.multiplier = getmultiplier(characterclass);
+        this.multiplier = getmultiplier();
         this.skill = skill;
         this.Ultimate = Ultimate;
         this.unlocked = unlocked;
@@ -46,10 +46,10 @@ public class character {
         return characterclass;
     }
 
-    public double getmultiplier(String charClass) { 
+    public double getmultiplier() { 
         Random rand = new Random();
 
-        return switch (charClass) {
+        return switch (characterclass) {
             case "Tricker" -> rand.nextInt(5) + rand.nextDouble();
             case "Warrior" -> 2.0;
             case "Mage" -> 3.0;
@@ -70,9 +70,14 @@ public class character {
         return sprite;
     }
 
+
     public void levelup() {
-        level++;
-        health += 10;
-        multiplier += 0.1;
+        if(level < 100){
+            level++;
+            health += 10;
+        }
+        else{
+            System.out.println("max level is 99");
+        }
     }
 }
