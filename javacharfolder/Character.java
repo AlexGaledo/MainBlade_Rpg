@@ -47,14 +47,20 @@ public class character {
     public double getmultiplier() { 
         Random rand = new Random();
 
-        return switch (characterclass) {
-            case "Trickster" -> Math.floor(rand.nextInt(5) + rand.nextDouble());
-            case "Warrior" -> 2.0;
-            case "Mage" -> 3.0;
-            case "Vanguard" -> 1.0;
-            case "Beast" -> 2.5;
-            default -> 0.0;
-        };
+        switch (characterclass) {
+            case "Trickster":
+                return Math.floor(rand.nextInt(5) + rand.nextDouble());
+            case "Warrior":
+                return 2.0;
+            case "Mage":
+                return 3.0;
+            case "Vanguard":
+                return 1.0;
+            case "Beast":
+                return 2.5;
+            default:
+                return 0.0;
+        }        
     }
 
     public  moveset getskill() {
