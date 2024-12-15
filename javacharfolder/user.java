@@ -1,10 +1,9 @@
 package javacharfolder;
-
 public class user {
     private final String username;
     private final String password;
     private boolean[] owned_characters = new boolean[10];
-    private final String levels;
+    private String levels;
 
     public user(String name, String password, boolean[] owned_characters,String levels){
         this.username = name;
@@ -36,5 +35,19 @@ public class user {
         }
         return levelArray;
     }
+
+    public void setcurrentlevel(character[] characterpool){
+        StringBuilder levelstr = new StringBuilder();
+        for(character elements:characterpool){
+            int level = elements.getlevel();
+            String levelstring = String.format("%02d", level);
+            levelstr.append(levelstring);
+        }
+        System.out.println("Debug: "+ levelstr.toString());
+        levels = levelstr.toString();
+        System.out.println("setcurrentleveldebug = " + levels);
+    }
+    
+
 
 }

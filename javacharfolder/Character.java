@@ -1,7 +1,5 @@
 package javacharfolder;
-
 import java.util.Random;
-
 public class character {
     private final String name;
     private int level;
@@ -19,7 +17,7 @@ public class character {
         this.level = level;
         this.health = health;
         this.characterclass = characterclass;
-        this.multiplier = getmultiplier();
+        this.multiplier = multiplier == 0.0 ? getmultiplier() : multiplier;
         this.skill = skill;
         this.Ultimate = Ultimate;
         this.unlocked = unlocked;
@@ -50,10 +48,11 @@ public class character {
         Random rand = new Random();
 
         return switch (characterclass) {
-            case "Tricker" -> rand.nextInt(5) + rand.nextDouble();
+            case "Trickster" -> Math.floor(rand.nextInt(5) + rand.nextDouble());
             case "Warrior" -> 2.0;
             case "Mage" -> 3.0;
             case "Vanguard" -> 1.0;
+            case "Beast" -> 2.5;
             default -> 0.0;
         };
     }
