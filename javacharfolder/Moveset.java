@@ -1,7 +1,7 @@
 package javacharfolder;
 public class moveset {
-    private String name;
-    private int rawdamage;
+    private final String name;
+    private final int rawdamage;
     private String skillasset;
 
     public moveset(String name, int rawdamage, String skillasset){

@@ -10,7 +10,7 @@ public class MainBlade {
     public static HashMap<String,user> registered_users = new HashMap<String,user>();
     public static user current_user = null;
     public static character bench[] = new character[5];
-    public static  characterpool heroes = new characterpool();
+    public static characterpool heroes = new characterpool();
 
     public static ImageIcon logo = new ImageIcon("javacharfolder/assets/Mainblade.png");
     public static ImageIcon bg = new ImageIcon("javacharfolder/assets/MainBladePage.png");
@@ -21,7 +21,7 @@ public class MainBlade {
         login();
         // menu();
     }
-
+    //set current user sa run na toh
     public static boolean setcurrentuser(String username, String password){
         if(accexist(username)){
             if(!verifyaccount(username,password)){
@@ -94,15 +94,15 @@ public class MainBlade {
             return true;
         }
     }
-
+    //return boolean class
     public static boolean accexist(String username){
         return registered_users.containsKey(username);
     }
-
+    //return user class
     public static user getuser(String username){
         return registered_users.get(username);
     }
-
+    //self explanatory
     public static void create_newaccount(String username, String password){
         boolean[] tempowned = new boolean[10];
         Arrays.fill(tempowned,false);
@@ -113,11 +113,11 @@ public class MainBlade {
         System.out.println("Successfully created account welcome to MainBlade!" + current_user.getusername());
         
     }
-
+    //para sa new users at retrieve
     public static void add_users(String username,user info){
         registered_users.put(username,info);
     }
-
+    //para sa login
     public static boolean verifyaccount(String username,String password){
         if(registered_users.containsKey(username)){
             if(registered_users.get(username).getpassword().equals(password)){
@@ -129,7 +129,7 @@ public class MainBlade {
         }
         return registered_users.containsKey(username);
     } 
-
+    //login logic 
     public static void login(){
         JFrame loginframe = new JFrame();
         loginframe.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -194,7 +194,7 @@ public class MainBlade {
 
         loginframe.setVisible(true);
     }
-
+    //save 4lines sa txt file den
     public static void save(){
         try {
             String filename = "registeredusers.txt";
@@ -228,7 +228,7 @@ public class MainBlade {
                 e.printStackTrace();
             }
     }
-
+    //retrieve 4lines sa txt file
     public static void retrieve(){
         try {
             String filename = "registeredusers.txt";
@@ -259,7 +259,7 @@ public class MainBlade {
             e.printStackTrace();
         }
     }
-
+    //debugtools kung right on track paba ginagawa naten ( sa console nakikita)
     public static void debugtools(){
         for (String username : registered_users.keySet()) {
             user users = registered_users.get(username);
@@ -279,14 +279,17 @@ public class MainBlade {
         System.out.println("hero name: "+ heroes.characterpool[0].getname());
         System.out.println("hero multiplier: "+ heroes.characterpool[0].getmultiplier());
         System.out.println("hero health: "+ heroes.characterpool[0].gethealth());
+        System.out.println("hero level: "+ heroes.characterpool[0].getlevel());
         System.out.println("---------------------------------------------------------");
         System.out.println("hero name: "+ heroes.characterpool[1].getname());
         System.out.println("hero multiplier: "+ heroes.characterpool[1].getmultiplier());
         System.out.println("hero health: "+ heroes.characterpool[1].gethealth());
+        System.out.println("hero level: "+ heroes.characterpool[1].getlevel());
         System.out.println("---------------------------------------------------------");
         System.out.println("hero name: "+ heroes.characterpool[2].getname());
         System.out.println("hero multiplier: "+ heroes.characterpool[2].getmultiplier());
         System.out.println("hero health: "+ heroes.characterpool[2].gethealth());
+        System.out.println("hero level: "+ heroes.characterpool[2].getlevel());
         System.out.println("---------------------------------------------------------");
 
     
@@ -295,7 +298,7 @@ public class MainBlade {
             System.out.println(owned + "\n");
         }
     }
-
+    // set level ng character galing sa save file sa txt 
     public static void setlevels(){
         int[] levelarray = current_user.getLevelsAsIntegers();
             for(int i = 0; i < levelarray.length; i++){
@@ -305,8 +308,9 @@ public class MainBlade {
                 }
             }
     }
+    
     // pat paayos ng itsura neto whahaha
-    public static void menu() {
+    public static void menu(){
         JFrame menuframe = new JFrame();
         menuframe.setLayout(new BorderLayout());
         menuframe.setSize(1280, 720);
@@ -372,15 +376,80 @@ public class MainBlade {
             
             
         }
+
         setlevels();
         debugtools();
+        JButton gachabutton = new JButton();
+        gachabutton.setText("MainBlade Gacha");
+        gachabutton.addActionListener(gb ->{
+            menuframe.dispose();
+            gacha();
+        });
+
+        userPanel.add(gachabutton);
         menuframe.add(userPanel, BorderLayout.WEST);
         menuframe.add(heroDisplay, BorderLayout.CENTER);
-       
+        
         menuframe.setVisible(true); 
     }
 
     //Gacha
+    public static void gacha(){
+        
+        JFrame gachaframe = new JFrame();
+        gachaframe.setLayout(new BorderLayout());
+        gachaframe.setSize(1280, 720);
+        gachaframe.getContentPane().setBackground(Color.BLACK);
+        gachaframe.setTitle("MainBlade_Gacha");
+        gachaframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        gachaframe.setIconImage(logo.getImage());
+
+        Random random = new Random();
+        int randomnumber = random.nextInt(3) + 1;
+        JButton rollbutton = new JButton();
+        rollbutton.setSize(100,50);
+        rollbutton.setText("ROLL");
+        rollbutton.addActionListener(rb ->{
+            switch(randomnumber){
+                case 1: JOptionPane.showMessageDialog(null,"You Got : " + heroes.characterpool[0].getname(),"Gacha Prize",JOptionPane.INFORMATION_MESSAGE);
+                if (heroes.characterpool[0].getunlockedstatus()) {
+                    heroes.characterpool[0].levelup();
+                    System.out.println("DEBUG IF CONDITION IN CASES ARE WORKING BRUH");
+                } else {
+                    heroes.characterpool[0].unlockcharacter();
+                }   
+               
+                break;
+
+                case 2: JOptionPane.showMessageDialog(null,"You Got : " + heroes.characterpool[1].getname(),"Gacha Prize",JOptionPane.INFORMATION_MESSAGE);
+                if (heroes.characterpool[1].getunlockedstatus()) {
+                    heroes.characterpool[1].levelup();
+                    System.out.println("DEBUG IF CONDITION IN CASES ARE WORKING BRUH");
+                } else {
+                    heroes.characterpool[1].unlockcharacter();
+                }
+                
+                break;
+
+                case 3: JOptionPane.showMessageDialog(null,"You Got : " + heroes.characterpool[2].getname(),"Gacha Prize",JOptionPane.INFORMATION_MESSAGE);
+                if (heroes.characterpool[2].getunlockedstatus()) {
+                    heroes.characterpool[2].levelup();
+                    System.out.println("DEBUG IF CONDITION IN CASES ARE WORKING BRUH");
+                } else {
+                    heroes.characterpool[2].unlockcharacter();
+                }
+                
+                break;
+
+                default:
+            }
+            debugtools();
+        });
+        gachaframe.add(rollbutton);
+        gachaframe.setVisible(true);
+    }
+
+   
     
 
     //Battle logic:  

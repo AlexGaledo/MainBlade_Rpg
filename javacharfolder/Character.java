@@ -70,14 +70,22 @@ public class character {
         return sprite;
     }
 
-
     public void levelup() {
         if(level < 100){
-            level++;
+            level+=1;
             health += 10;
         }
         else{
             System.out.println("max level is 99");
         }
+    }
+
+    public boolean getunlockedstatus(){
+        return unlocked;
+    }
+
+    public void unlockcharacter(){
+        unlocked = true;
+        
     }
 }
