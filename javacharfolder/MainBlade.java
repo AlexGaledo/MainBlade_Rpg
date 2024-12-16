@@ -3,6 +3,7 @@ package javacharfolder;
 
 import java.awt.*;
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -272,7 +273,7 @@ public class MainBlade {
                 System.out.print(owned ? '1' : '0');
             }
             System.out.println("\n---");
-
+            System.out.println("DEBUG: characterpool length = " + heroes.characterpool.length);
         }
         System.out.println(current_user.getlevels());
         System.out.println(current_user.getusername());
@@ -287,6 +288,12 @@ public class MainBlade {
         for(boolean owned:current_user.getownedinfo()){
             System.out.println(owned + "\n");
         }
+        try {
+          benchdebug();  
+        } catch (Exception e) {
+            System.out.println("team not yet full max is 5");
+        }
+        
     }
     // set level ng character galing sa save file sa txt 
     public static void initializelevels(){
@@ -335,6 +342,7 @@ public class MainBlade {
                     String heroname = heroes.characterpool[index].getname();
                     moveset heroskill = heroes.characterpool[index].getskill();
                     moveset heroult = heroes.characterpool[index].getUlt();
+                    int herolevel = heroes.characterpool[index].getlevel();
                     
                    
                     String spritePath = heroes.characterpool[index].getsprite();
@@ -346,7 +354,14 @@ public class MainBlade {
                         ImageIcon herosprite = new ImageIcon(spritePath);
                         
                         heroDisplay.setIcon(herosprite); 
-                        heroDisplay.setText(heroname + " |Skill: " + heroskill.getmovename() + " |Ult: " + heroult.getmovename());
+                        heroDisplay.setText(
+                            "<html>" +
+                            heroname + "<br>" + 
+                            " | Skill: " + heroskill.getmovename() + "<br>" + 
+                            " | Ult: " + heroult.getmovename() + "<br>" + 
+                            " | Level: " + herolevel + 
+                            "</html>"
+                        );//pwede pla html
                         heroDisplay.setFont(new Font("OLD English Text MT", Font.BOLD, 20));
                         heroDisplay.setForeground(Color.red);
                         System.out.println(heroes.characterpool[index].getname() + " : " + heroes.characterpool[index].getlevel());
@@ -361,6 +376,7 @@ public class MainBlade {
                     menuframe.repaint(); 
                 });
                 userPanel.add(ownedbutton);
+                
             }
             
             
@@ -368,16 +384,31 @@ public class MainBlade {
 
         debugtools();
         JButton gachabutton = new JButton();
-        gachabutton.setText("MainBlade Gacha");
-        gachabutton.addActionListener(gb ->{
-            menuframe.dispose();
-            gacha();
-        });
+            gachabutton.setText("MainBlade Gacha");
+            gachabutton.addActionListener(gb ->{
+                menuframe.dispose();
+                gacha();
+            });
+        JButton savebutton = new JButton();
+            savebutton.setSize(100,50);
+            savebutton.setText("SAVE PROGRESS");
+            savebutton.addActionListener(sb2->{
+                save();
+                menuframe.dispose();
+            });
 
+        JButton benchbutton = new JButton();
+            benchbutton.setSize(100,50);
+            benchbutton.setText("Modify Bench");
+            benchbutton.addActionListener(bb->{
+                menuframe.dispose();
+                benched();
+            });
+        userPanel.add(savebutton);
         userPanel.add(gachabutton);
+        userPanel.add(benchbutton);
         menuframe.add(userPanel, BorderLayout.WEST);
         menuframe.add(heroDisplay, BorderLayout.CENTER);
-        
         menuframe.setVisible(true); 
     }
 
@@ -417,17 +448,16 @@ public class MainBlade {
         rollbutton.setText("ROLL");
         rollbutton.addActionListener(rb ->{
         int index = random.nextInt(heroes.characterpool.length);
-            JOptionPane.showMessageDialog(null,"You Got : " + heroes.characterpool[index].getname(),
-            "Gacha Prize",JOptionPane.INFORMATION_MESSAGE);
-                if (current_user.getownedinfo()[index]) {
-                    heroes.characterpool[index].levelup();
-                    System.out.println("DEBUG IF CONDITION IN GACHA CASES ARE WORKING BRUH");
-                } else {
-                    current_user.getownedinfo()[index] = true;
-                }   
-            
-            current_user.setcurrentlevel(heroes.getcpool());
-            debugtools();
+        JOptionPane.showMessageDialog(null,"You Got : " + heroes.characterpool[index].getname(),
+        "Gacha Prize",JOptionPane.INFORMATION_MESSAGE);
+            if (current_user.getownedinfo()[index]) {
+                heroes.characterpool[index].levelup();
+                System.out.println("Debugcurrentownedlength: "+current_user.getownedinfo().length);
+            } else {
+                current_user.getownedinfo()[index] = true;
+            }   
+        current_user.setcurrentlevel(heroes.getcpool());
+        debugtools();
         });
         gachapanel.add(rollbutton);
         gachapanel.add(menubutton);
@@ -436,8 +466,85 @@ public class MainBlade {
         gachaframe.setVisible(true);
     }
 
-   
+   //Bench Characters
+    public static int counter = 0;
+    public static void benched(){
+        counter = 0;
+        Arrays.fill(bench,null);
+        JDialog benchframe = new JDialog();
+        benchframe.setLayout(new FlowLayout());
+        benchframe.setSize(500,200);
+        benchframe.setTitle("Select Characters you want to use: ");
+        Boolean[] activearray = new Boolean[10];
+        Arrays.fill(activearray, false);
+        boolean[] ownedchars = current_user.getownedinfo();
+        for(int index = 0; index < ownedchars.length; index++){
+            String heroname = heroes.characterpool[index].getname();
+            final int x = index;
+            if(ownedchars[index]){
+                JButton herobutton = new JButton();
+                
+                herobutton.setSize(50,50);
+                herobutton.setText(heroname);
+                herobutton.setForeground(Color.GRAY); 
+                herobutton.addActionListener(hb->{
+                    if(activearray[x]){
+                       herobutton.setForeground(Color.GRAY);
+                       activearray[x] = false;
+                       counter --;
+                    }
+                    else{
+                        activearray[x] = true;
+                        herobutton.setForeground(Color.GREEN);
+                        counter ++;
+                    }
+                });
+                benchframe.add(herobutton);
+            }
+        }
+
+        JButton confirmbutton = new JButton();
+        confirmbutton.setText("Confirm Bench");
+        confirmbutton.setSize(50,50);
+        confirmbutton.addActionListener(cb->{
+            System.out.println("counter: " + counter);
+            if(counter > 5){
+                JOptionPane.showMessageDialog(benchframe, "Maximum of 5 characters only", null, JOptionPane.WARNING_MESSAGE);
+            }
+            else{
+                try{
+                int benchindex = 0;
+                for(int index = 0; index < activearray.length; index++){
+                    if(activearray[index]){
+                        bench[benchindex] = heroes.characterpool[index];
+                        benchindex++;    
+                    }
+                }
+                benchdebug();
+            }catch(Exception e){
+                System.out.println("bench not full");
+            }
+            
+            benchframe.dispose();
+            menu();
+            
+        }});
+        benchframe.add(confirmbutton);
+        benchframe.setVisible(true);   
+    }
     
+    public static void benchdebug(){
+        for(character element:bench){
+            System.out.println(element.getname());
+        }
+    }
+
+    public static void battle(){
+
+    }
+    
+
+
 
     //Battle logic:  
     //Duplicate copies of characters 
