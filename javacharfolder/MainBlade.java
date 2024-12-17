@@ -3,10 +3,11 @@ package javacharfolder;
 
 import java.awt.*;
 import java.io.*;
-import java.lang.reflect.Array;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.border.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 
 
 public class MainBlade {
@@ -14,6 +15,7 @@ public class MainBlade {
     public static user current_user = null;
     public static character bench[] = new character[5];
     public static characterpool heroes = new characterpool();
+    public static enemypool enemies = new enemypool();
 
     public static ImageIcon logo = new ImageIcon("javacharfolder/assets/Mainblade.png");
     public static ImageIcon bg = new ImageIcon("javacharfolder/assets/MainBladePage.png");
@@ -109,8 +111,12 @@ public class MainBlade {
     public static void create_newaccount(String username, String password){
         boolean[] tempowned = new boolean[10];
         Arrays.fill(tempowned,false);
-        tempowned[0] = true;String initialLevels = "00000000000000000000";
-        user newuser = new user(username,password,tempowned,initialLevels);
+        //free 5 characters agad
+        for(int i = 0;i < 5;i++){
+            tempowned[i] = true;
+        }
+        String initialLevels = "00000000000000000000";
+        user newuser = new user(username,password,tempowned,initialLevels,1);
         registered_users.put(username,newuser);
         current_user = newuser;
         System.out.println("Successfully created account welcome to MainBlade!" + current_user.getusername());
@@ -217,10 +223,11 @@ public class MainBlade {
                     writer.write(owned ? '1' : '0');
                 }
                 writer.write("\n");
+                String leveltext = element.getlevels();
+                writer.write(leveltext +"\n");
+                writer.write(Integer.toString(element.getcoins())+"\n");
             }
-            String leveltext = current_user.getlevels();
-            writer.write(leveltext +"\n");
-            
+
             writer.close();
         } catch (IOException e) {
                 System.out.println("Error occured");
@@ -247,8 +254,9 @@ public class MainBlade {
                     }
                     String level = filereader.readLine();
                     System.out.println("debug tool: " + level);
-                    user tempuser = new user(username, password, ownedchars,level);
-                    
+                    String coin = filereader.readLine();
+                    int coins = Integer.parseInt(coin); 
+                    user tempuser = new user(username, password, ownedchars,level,coins);
                     add_users(username, tempuser);
                 }
                 filereader.close();
@@ -404,35 +412,61 @@ public class MainBlade {
                 menuframe.dispose();
                 benched();
             });
+
+        JButton battlebutton = new JButton();
+        battlebutton.setSize(100,50);
+        battlebutton.setText("Battle");
+        battlebutton.addActionListener(bb->{
+            if(bench[0]!=null){
+            menuframe.dispose();
+            initializebattle();
+            }
+            else{
+                JOptionPane.showMessageDialog(null, "Bench is empty","Empty Bench Warning",JOptionPane.ERROR_MESSAGE);
+            }
+        });
         userPanel.add(savebutton);
         userPanel.add(gachabutton);
         userPanel.add(benchbutton);
+        userPanel.add(battlebutton);
         menuframe.add(userPanel, BorderLayout.WEST);
         menuframe.add(heroDisplay, BorderLayout.CENTER);
         menuframe.setVisible(true); 
     }
 
+    public static boolean rollconfirmation(){
+        int response = JOptionPane.showConfirmDialog(
+            null, // Parent component
+            "Do you want to roll? , Current coins amount: " + current_user.getcoins(), // Message
+            "Confirm Roll", // Title
+            JOptionPane.YES_NO_OPTION, // Yes/No options
+            JOptionPane.QUESTION_MESSAGE // Icon type
+        );
+        if(response == JOptionPane.YES_OPTION){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
     //Gacha
     public static void gacha(){
         
-        JFrame gachaframe = new JFrame();
-        gachaframe.setLayout(new FlowLayout());
-        gachaframe.setSize(1280, 720);
+        JDialog gachaframe = new JDialog();
+        gachaframe.setLayout(new BorderLayout());
+        gachaframe.setSize(1200, 720);
         gachaframe.getContentPane().setBackground(Color.BLACK);
         gachaframe.setTitle("MainBlade_Gacha");
-        gachaframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gachaframe.setIconImage(logo.getImage());
+        gachaframe.setBackground(Color.BLACK);
 
         JPanel gachapanel = new JPanel();
-        gachapanel.setSize(800,600);
+        gachapanel.setLayout(new FlowLayout());
+        gachapanel.setBackground(Color.BLACK);
+        gachapanel.setSize(800,70);
 
-        JButton savebutton = new JButton();
-        savebutton.setText("Save Progress");
-        savebutton.setSize(100,50);
-        savebutton.addActionListener(sb ->{
-            gachaframe.dispose();
-            save();
-        });
+
+
 
         JButton menubutton = new JButton();
         menubutton.setText("Back to menu");
@@ -441,28 +475,61 @@ public class MainBlade {
             gachaframe.dispose();
             menu();
         });
+        
 
         Random random = new Random();
         JButton rollbutton = new JButton();
         rollbutton.setSize(100,50);
         rollbutton.setText("ROLL");
         rollbutton.addActionListener(rb ->{
-        int index = random.nextInt(heroes.characterpool.length);
-        JOptionPane.showMessageDialog(null,"You Got : " + heroes.characterpool[index].getname(),
-        "Gacha Prize",JOptionPane.INFORMATION_MESSAGE);
-            if (current_user.getownedinfo()[index]) {
-                heroes.characterpool[index].levelup();
-                System.out.println("Debugcurrentownedlength: "+current_user.getownedinfo().length);
-            } else {
-                current_user.getownedinfo()[index] = true;
-            }   
-        current_user.setcurrentlevel(heroes.getcpool());
-        debugtools();
-        });
+            if(current_user.getcoins() <= 0){
+                JOptionPane.showMessageDialog(null, "Insufficient Coins, Fight more to get coins", null, JOptionPane.ERROR_MESSAGE);
+                }else{
+                    if(rollconfirmation()){
+                        int index = random.nextInt(heroes.characterpool.length);
+                        JOptionPane.showMessageDialog(null,"You Got : " + heroes.characterpool[index].getname(),
+                        "Gacha Prize",JOptionPane.INFORMATION_MESSAGE);
+                            if (current_user.getownedinfo()[index]) {
+                                heroes.characterpool[index].levelup();
+                                System.out.println("Debugcurrentownedlength: "+current_user.getownedinfo().length);
+                            } else {
+                                current_user.getownedinfo()[index] = true;
+                            }   
+                        current_user.setcurrentlevel(heroes.getcpool());
+                        debugtools();
+                        current_user.deductcoin();
+                    }
+                }
+            });
+        
+        String[][] data = new String[heroes.characterpool.length][4];
+        for(int i = 0 ; i < heroes.characterpool.length; i++){
+            data[i][0] = heroes.characterpool[i].getname();
+            data[i][1] = heroes.characterpool[i].getclass();
+            data[i][2] = heroes.characterpool[i].getskill().getmovename();
+            data[i][3] = heroes.characterpool[i].getUlt().getmovename();
+        }
+        String[] columnNames = {"Character", "Class", "Skill", "Ultimate"};
+        DefaultTableModel model = new DefaultTableModel(data, columnNames);
+        JTable table = new JTable(model);
+        table.setBackground(Color.BLACK);
+        table.setForeground(Color.white);
+        table.setGridColor(Color.red);
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBackground(Color.BLACK);
+
+        JTableHeader header = table.getTableHeader();
+        header.setBackground(Color.BLACK);
+        header.setForeground(Color.YELLOW);
+        table.setTableHeader(header);
+
+        table.setPreferredScrollableViewportSize(table.getPreferredSize());
+        table.setFillsViewportHeight(true);
+    
+        gachaframe.add(scrollPane,BorderLayout.CENTER);
         gachapanel.add(rollbutton);
         gachapanel.add(menubutton);
-        gachapanel.add(savebutton);
-        gachaframe.add(gachapanel);
+        gachaframe.add(gachapanel,BorderLayout.SOUTH);
         gachaframe.setVisible(true);
     }
 
@@ -508,8 +575,8 @@ public class MainBlade {
         confirmbutton.setSize(50,50);
         confirmbutton.addActionListener(cb->{
             System.out.println("counter: " + counter);
-            if(counter > 5){
-                JOptionPane.showMessageDialog(benchframe, "Maximum of 5 characters only", null, JOptionPane.WARNING_MESSAGE);
+            if(counter > 5 || counter < 5){
+                JOptionPane.showMessageDialog(benchframe, "Choose exactly 5 characters only", null, JOptionPane.WARNING_MESSAGE);
             }
             else{
                 try{
@@ -538,43 +605,37 @@ public class MainBlade {
             System.out.println(element.getname());
         }
     }
+    //create copies
+    public static void initializebattle(){
+        try{
+            int[] health = new int[5];
+            for(int i = 0; i < bench.length;i++){
+                if(bench[i] == null){
+                    health[i] = 0;
+                }else{
+                health[i] = bench[i].gethealth();
+                }
+            }
+            Random random = new Random();
+            enemy[] enemylineup = new enemy[5];
+            //initialize enemylineup
+            for(int i = 0; i < enemylineup.length; i++){
+                int randomindex = random.nextInt(enemies.enemypool.length); 
+                enemylineup[i] = enemies.enemypool[randomindex];
+            }
+            int[] enemyhealth = new int[5];
+            for(int i = 0; i < enemylineup.length; i++){
+                enemyhealth[i] = enemylineup[i].gethealth();
+            }
 
-    public static void battle(){
+            if(battlesystem.battle(bench, health, enemylineup, enemyhealth)){
+                current_user.earncoins();}
+        }catch(Exception e){
+            System.out.println("Character not Found");
+        }
+        }
+    } 
 
-    }
-    
 
 
 
-    //Battle logic:  
-    //Duplicate copies of characters 
-    //Turn points mechanics before a button would be active
-
-    // public static void battle(Character player, Character Enemy){
-        // moveset heroskill = heroes.characterpool[index].getskill();
-        // moveset heroult = heroes.characterpool[index].getUlt();
-
-        // JDialog movebox = new JDialog();
-        // movebox.setLayout(new FlowLayout());
-        // movebox.setSize(500,200);
-        // movebox.setTitle("Choose Move and target");
-        // //Gagamitin sa Fight logic
-        // JButton skillButton = new JButton();
-        // skillButton.setText(heroskill.getmovename());
-        // skillButton.setPreferredSize(new Dimension(100,100));
-        // skillButton.addActionListener(sb->{
-        //     System.out.println(heroskill.getmovename() + " was used");
-        // });
-        // movebox.add(skillButton);
-
-        // JButton ultButton = new JButton();
-        // ultButton.setText(heroult.getmovename());
-        // ultButton.setPreferredSize(new Dimension(100,100));
-        // ultButton.addActionListener(ub->{
-        //     System.out.println(heroult.getmovename() + " was used");
-        // });
-        // movebox.add(ultButton);
-
-        // movebox.setVisible(true);
-    // }
-}

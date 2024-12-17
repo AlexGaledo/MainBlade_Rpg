@@ -4,12 +4,14 @@ public class user {
     private final String password;
     private boolean[] owned_characters = new boolean[10];
     private String levels;
+    private int coins;
 
-    public user(String name, String password, boolean[] owned_characters,String levels){
+    public user(String name, String password, boolean[] owned_characters,String levels,int coins){
         this.username = name;
         this.password = password;
         this.owned_characters = owned_characters;
         this.levels = levels;
+        this.coins = coins;
     }
 
     public String getusername(){
@@ -46,6 +48,18 @@ public class user {
         System.out.println("Debug: "+ levelstr.toString());
         levels = levelstr.toString();
         System.out.println("setcurrentleveldebug = " + levels);
+    }
+
+    public int getcoins(){
+        return coins;
+    }
+
+    public void earncoins(){
+        coins++;
+    }
+
+    public void deductcoin(){
+        coins--;
     }
     
 
