@@ -39,7 +39,6 @@ public class battlesystem {
                     String[] moveOptions;
 
                     if (teamhealth < 3000) {
-                        
                         moveOptions = new String[]{heroskill.getmovename(), heroult.getmovename()};
                     } else {
                         

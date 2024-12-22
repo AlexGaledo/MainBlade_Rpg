@@ -389,7 +389,10 @@ public class MainBlade {
             
             
         }
-
+        JPanel modifypanel = new JPanel();
+        modifypanel.setPreferredSize(new Dimension(200,50));
+        modifypanel.setLayout(new FlowLayout());
+        modifypanel.setBackground(Color.black);
         debugtools();
         JButton gachabutton = new JButton();
             gachabutton.setText("MainBlade Gacha");
@@ -425,11 +428,12 @@ public class MainBlade {
                 JOptionPane.showMessageDialog(null, "Bench is empty","Empty Bench Warning",JOptionPane.ERROR_MESSAGE);
             }
         });
-        userPanel.add(savebutton);
-        userPanel.add(gachabutton);
-        userPanel.add(benchbutton);
-        userPanel.add(battlebutton);
+        modifypanel.add(savebutton);
+        modifypanel.add(gachabutton);
+        modifypanel.add(benchbutton);
+        modifypanel.add(battlebutton);
         menuframe.add(userPanel, BorderLayout.WEST);
+        menuframe.add(modifypanel, BorderLayout.SOUTH);
         menuframe.add(heroDisplay, BorderLayout.CENTER);
         menuframe.setVisible(true); 
     }
