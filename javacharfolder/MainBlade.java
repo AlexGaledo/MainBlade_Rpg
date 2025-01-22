@@ -1,6 +1,5 @@
 package javacharfolder;
 
-
 import java.awt.*;
 import java.io.*;
 import java.util.*;
@@ -438,13 +437,14 @@ public class MainBlade {
         menuframe.setVisible(true); 
     }
 
+    //double check roll
     public static boolean rollconfirmation(){
         int response = JOptionPane.showConfirmDialog(
             null, // Parent component
-            "Do you want to roll? , Current coins amount: " + current_user.getcoins(), // Message
-            "Confirm Roll", // Title
-            JOptionPane.YES_NO_OPTION, // Yes/No options
-            JOptionPane.QUESTION_MESSAGE // Icon type
+            "Do you want to roll? , Current coins amount: " + current_user.getcoins(),
+            "Confirm Roll",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE
         );
         if(response == JOptionPane.YES_OPTION){
             return true;
@@ -453,7 +453,7 @@ public class MainBlade {
             return false;
         }
     }
-    //Gacha
+    //Gacha / mystery box 
     public static void gacha(){
         
         JDialog gachaframe = new JDialog();
