@@ -21,4 +21,5 @@ public class enemymoves{
     public String getasset(){
         return skillasset;
     }
+    //test commit
 }
